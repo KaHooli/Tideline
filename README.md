@@ -1,4 +1,6 @@
-# Tideline
+<p align="center">
+  <img src="assets/tideline-logo.png" width="420" alt="Tideline">
+</p>
 
 Tideline manages, sorts, and cleans up Safari bookmarks on macOS and iOS: duplicate
 detection, folder sorting (by domain / date / tag), dead-link checking, and tagging + search.
@@ -44,9 +46,6 @@ the exact protocol.
   Safari specifically. There are still unresolved reports of Safari terminating background
   pages mid-task on iOS, which `syncNow()`'s drain-then-push design is meant to tolerate,
   but none of this has been confirmed against a real Safari build yet.
-- **No app icon / extension toolbar icon assets** — `Extension/Shared/manifest.json`
-  references `images/icon-*.png` that don't exist yet, and there's no `Assets.xcassets`
-  for the app icon.
 - **Tags aren't round-tripped through Safari** — `browser.bookmarks` has no native concept
   of tags, so `Bookmark.tags` is currently just in-memory app state, not persisted back to
   Safari. A real implementation likely needs to encode tags into the bookmark title or a

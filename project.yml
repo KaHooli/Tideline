@@ -32,6 +32,7 @@ targets:
         CODE_SIGN_ENTITLEMENTS: App/macOS/Tideline.entitlements
         ENABLE_HARDENED_RUNTIME: YES
         GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         SWIFT_VERSION: "5.0"
 
   Tideline-iOS:
@@ -53,6 +54,7 @@ targets:
         INFOPLIST_FILE: App/iOS/Info.plist
         CODE_SIGN_ENTITLEMENTS: App/iOS/Tideline.entitlements
         GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         TARGETED_DEVICE_FAMILY: "1,2"
         SWIFT_VERSION: "5.0"
 
@@ -61,6 +63,10 @@ targets:
     platform: macOS
     sources:
       - path: Extension/Shared
+        excludes:
+          - "images/**"
+      - path: Extension/Shared/images
+        type: folder
     dependencies:
       - package: TidelineCore
       - sdk: SafariServices.framework
@@ -82,6 +88,10 @@ targets:
     platform: iOS
     sources:
       - path: Extension/Shared
+        excludes:
+          - "images/**"
+      - path: Extension/Shared/images
+        type: folder
     dependencies:
       - package: TidelineCore
       - sdk: SafariServices.framework
