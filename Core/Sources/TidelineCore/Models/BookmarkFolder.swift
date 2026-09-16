@@ -42,4 +42,22 @@ extension BookmarkFolder {
             }
         }
     }
+
+    /// Rebuilds the tree with `transform` applied to every bookmark, preserving folder
+    /// structure. Used to overlay data Safari doesn't store natively (e.g. tags) onto a
+    /// freshly-fetched tree without losing the tree's shape.
+    public func mapBookmarks(_ transform: (Bookmark) -> Bookmark) -> BookmarkFolder {
+        BookmarkFolder(id: id, title: title, children: children.map { $0.mapBookmarks(transform) })
+    }
+}
+
+extension BookmarkNode {
+    public func mapBookmarks(_ transform: (Bookmark) -> Bookmark) -> BookmarkNode {
+        switch self {
+        case .bookmark(let bookmark):
+            return .bookmark(transform(bookmark))
+        case .folder(let folder):
+            return .folder(folder.mapBookmarks(transform))
+        }
+    }
 }

@@ -3,9 +3,13 @@
 // the containing app's SafariWebExtensionHandler — no host manifest is needed, unlike
 // Chrome/Firefox native messaging.
 //
-// NOTE: verify `background.service_worker` is the correct key for this WebKit/Safari
-// version — Safari's MV3 background execution model has shifted between releases, and
-// this hasn't been run against an actual Safari build yet (see project README).
+// This runs as a non-persistent "event page" (manifest.json declares `background.scripts`
+// + `persistent: false`), per Apple's own Safari Web Extension compatibility docs —
+// `background.service_worker` is the Chrome MV3 convention and is unreliable on iOS
+// Safari specifically. Even so, background pages can still be terminated/restarted by
+// Safari at any time (there are unresolved reports of iOS killing them mid-task), which is
+// exactly why syncNow() treats every sync as a fresh, idempotent drain-then-push cycle
+// rather than relying on any in-memory state surviving between runs.
 
 async function syncTreeToApp() {
   const [rootNode] = await browser.bookmarks.getTree();

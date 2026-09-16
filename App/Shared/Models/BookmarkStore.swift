@@ -14,13 +14,16 @@ public final class BookmarkStore {
 
     private let bridge: any SafariBookmarksBridge
     private let deadLinkChecker: DeadLinkChecker
+    private let tagStore: TagStore
 
     public init(
         bridge: any SafariBookmarksBridge = NativeMessagingBookmarksBridge(),
-        deadLinkChecker: DeadLinkChecker = DeadLinkChecker()
+        deadLinkChecker: DeadLinkChecker = DeadLinkChecker(),
+        tagStore: TagStore = TagStore()
     ) {
         self.bridge = bridge
         self.deadLinkChecker = deadLinkChecker
+        self.tagStore = tagStore
         self.root = BookmarkFolder(title: "Favorites")
     }
 
@@ -34,12 +37,31 @@ public final class BookmarkStore {
 
     public func refreshFromSafari() async {
         do {
-            root = try await bridge.fetchBookmarkTree()
+            let fetched = try await bridge.fetchBookmarkTree()
+            let tagsByID = tagStore.loadAll()
+            root = fetched.mapBookmarks { bookmark in
+                var updated = bookmark
+                updated.tags = tagsByID[bookmark.id] ?? []
+                return updated
+            }
             refreshDuplicates()
         } catch {
             // The bridge surfaces connectivity/permission issues; the UI layer decides
             // how to present them (e.g. "enable the Tideline extension in Safari").
         }
+    }
+
+    /// Tags live outside Safari entirely (see `TagStore`), so this only touches local
+    /// state and the App Group — it never talks to the extension.
+    public func setTags(_ tags: Set<String>, for bookmark: Bookmark) throws {
+        try tagStore.setTags(tags, for: bookmark.id)
+        root = root.mapBookmarks { candidate in
+            guard candidate.id == bookmark.id else { return candidate }
+            var updated = candidate
+            updated.tags = tags
+            return updated
+        }
+        refreshDuplicates()
     }
 
     public func refreshDuplicates() {

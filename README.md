@@ -36,11 +36,14 @@ the exact protocol.
   parent — confirm this against a real Safari install. It also doesn't delete the
   (now-empty) folders bookmarks get moved out of; that's left as a manual cleanup, or a
   future explicit, user-confirmed operation, since deleting folders is destructive.
-- **Background execution model is unverified.** `manifest.json` declares
-  `background.service_worker`, and the sync protocol assumes the extension can reliably
-  run and message the app. This hasn't been tested against a real Safari build — check
-  Apple's current WebExtensions documentation once you have Xcode installed, since this
-  has changed across Safari versions and may behave differently on iOS vs. macOS.
+- **Background execution model: sourced, not device-tested.** `manifest.json` declares
+  `background.scripts` + `persistent: false` (a non-persistent event page), per Apple's
+  [Safari Web Extension browser-compatibility
+  docs](https://developer.apple.com/documentation/safariservices/safari_web_extensions/assessing_your_safari_web_extension_s_browser_compatibility)
+  — Chrome's `background.service_worker` convention is known to be unreliable on iOS
+  Safari specifically. There are still unresolved reports of Safari terminating background
+  pages mid-task on iOS, which `syncNow()`'s drain-then-push design is meant to tolerate,
+  but none of this has been confirmed against a real Safari build yet.
 - **No app icon / extension toolbar icon assets** — `Extension/Shared/manifest.json`
   references `images/icon-*.png` that don't exist yet, and there's no `Assets.xcassets`
   for the app icon.

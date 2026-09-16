@@ -5,7 +5,8 @@
   "description": "Manage, sort, and clean up your Safari bookmarks.",
   "permissions": ["bookmarks", "nativeMessaging", "storage"],
   "background": {
-    "service_worker": "background.js"
+    "scripts": ["background.js"],
+    "persistent": false
   },
   "action": {
     "default_popup": "popup.html",
