@@ -30,10 +30,12 @@ the exact protocol.
 
 ## Known limitations / TODOs
 
-- **`applyFolderDiff` isn't implemented** (`Extension/Shared/background.js`). Sorting
-  bookmarks into new folders needs a real diff against Safari's existing tree — naively
-  deleting and recreating everything would lose Safari's own bookmark IDs. This is the
-  main piece of unfinished logic.
+- **`applyFolderDiff`'s target parent folder is unverified** (`Extension/Shared/background.js`).
+  It creates sorted folders under Safari's real tree root's first child (normally the
+  bookmarks bar / Favorites), since the true root usually isn't a valid `bookmarks.create`
+  parent — confirm this against a real Safari install. It also doesn't delete the
+  (now-empty) folders bookmarks get moved out of; that's left as a manual cleanup, or a
+  future explicit, user-confirmed operation, since deleting folders is destructive.
 - **Background execution model is unverified.** `manifest.json` declares
   `background.service_worker`, and the sync protocol assumes the extension can reliably
   run and message the app. This hasn't been tested against a real Safari build — check

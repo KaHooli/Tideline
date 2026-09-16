@@ -52,11 +52,44 @@ async function applyPendingOperations(operations) {
   }
 }
 
-// Rebuilding the whole tree from scratch (remove-all + recreate) would blow away Safari's
-// own IDs and any state that isn't modeled here; a real diff/merge against the existing
-// tree is a known TODO — see README "Known limitations".
-async function applyFolderDiff(_targetFolder) {
-  throw new Error("applyFolderDiff is not implemented yet — see README Known limitations");
+// Applies a synthesized folder tree (as produced by TidelineCore's FolderSorter) on top
+// of Safari's real bookmarks. FolderSorter never changes a Bookmark's id — it only
+// regroups existing bookmarks into brand-new folders — so every `bookmark` node here is
+// assumed to reference a real, existing Safari bookmark, and every `folder` node is new.
+// That means the diff only ever needs to CREATE folders and MOVE existing bookmarks into
+// them; it never deletes or recreates a bookmark, which would lose Safari's own bookmark
+// id and any per-bookmark state (e.g. cached favicon) that isn't modeled here.
+//
+// This does NOT delete the (now likely empty) folders bookmarks were moved out of —
+// deleting folders is destructive and, unlike creating/moving, isn't easily undone if a
+// folder held something this sync missed. Left-behind empty folders are a cosmetic
+// cleanup the user can do in Safari; a "delete empty folders" pass could be added later
+// as an explicit, separate, user-confirmed operation.
+//
+// Where the new top-level folder gets created is unverified: Safari's real tree root
+// (`getTree()[0].id`) usually isn't a valid `parentId` for `bookmarks.create` in
+// WebExtension implementations, so this targets the root's first child instead (normally
+// the bookmarks bar / Favorites). Confirm this against a real Safari install — if the
+// sorted folder lands somewhere unexpected, this is the place to fix.
+async function applyFolderDiff(targetFolder) {
+  const [root] = await browser.bookmarks.getTree();
+  const topLevelParentId = root.children?.[0]?.id ?? root.id;
+  await createFolderContents(targetFolder, topLevelParentId);
+}
+
+async function createFolderContents(folderSnapshot, parentId) {
+  const created = await browser.bookmarks.create({
+    parentId,
+    title: folderSnapshot.title
+  });
+
+  for (const node of folderSnapshot.children) {
+    if (node.folder) {
+      await createFolderContents(node.folder, created.id);
+    } else if (node.bookmark) {
+      await browser.bookmarks.move(node.bookmark.id, { parentId: created.id });
+    }
+  }
 }
 
 // Full sync cycle, run on popup open and on demand: drain whatever the app queued up
