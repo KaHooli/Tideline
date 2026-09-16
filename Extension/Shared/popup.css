@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  font-family: -apple-system, sans-serif;
+  width: 260px;
+}
+
+.popup {
+  padding: 16px;
+}
+
+h1 {
+  font-size: 15px;
+  margin: 0 0 8px;
+}
+
+#status {
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 12px;
+}
+
+button {
+  width: 100%;
+  padding: 6px 0;
+  border-radius: 6px;
+  border: none;
+  background: #007aff;
+  color: white;
+  font-size: 13px;
+}
+
+button:disabled {
+  opacity: 0.5;
+}
+
+.hint {
+  font-size: 11px;
+  color: #999;
+  margin: 12px 0 0;
+}

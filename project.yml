@@ -1,0 +1,113 @@
+name: Tideline
+
+options:
+  bundleIdPrefix: au.id.cavanaghs
+  deploymentTarget:
+    macOS: "14.0"
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+packages:
+  TidelineCore:
+    path: Core
+
+targets:
+  Tideline-macOS:
+    type: application
+    platform: macOS
+    sources:
+      - path: App/Shared
+      - path: App/macOS
+    dependencies:
+      - package: TidelineCore
+      - target: TidelineExtension-macOS
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: au.id.cavanaghs.Tideline
+        PRODUCT_NAME: Tideline
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: App/macOS/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/macOS/Tideline.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: NO
+        SWIFT_VERSION: "5.0"
+
+  Tideline-iOS:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/Shared
+      - path: App/iOS
+    dependencies:
+      - package: TidelineCore
+      - target: TidelineExtension-iOS
+        embed: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: au.id.cavanaghs.Tideline
+        PRODUCT_NAME: Tideline
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: App/iOS/Info.plist
+        CODE_SIGN_ENTITLEMENTS: App/iOS/Tideline.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+
+  TidelineExtension-macOS:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Extension/Shared
+    dependencies:
+      - package: TidelineCore
+      - sdk: SafariServices.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: au.id.cavanaghs.Tideline.Extension
+        PRODUCT_NAME: "Tideline Extension"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: Extension/Shared/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Extension/macOS/Extension.entitlements
+        ENABLE_HARDENED_RUNTIME: YES
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        SWIFT_VERSION: "5.0"
+
+  TidelineExtension-iOS:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Extension/Shared
+    dependencies:
+      - package: TidelineCore
+      - sdk: SafariServices.framework
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: au.id.cavanaghs.Tideline.Extension
+        PRODUCT_NAME: "Tideline Extension"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        INFOPLIST_FILE: Extension/Shared/Info.plist
+        CODE_SIGN_ENTITLEMENTS: Extension/Shared/Extension.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+
+schemes:
+  Tideline-macOS:
+    build:
+      targets:
+        Tideline-macOS: all
+    run:
+      config: Debug
+  Tideline-iOS:
+    build:
+      targets:
+        Tideline-iOS: all
+    run:
+      config: Debug

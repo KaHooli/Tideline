@@ -1,0 +1,21 @@
+name: Core tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "Core/**"
+      - ".github/workflows/core-tests.yml"
+  pull_request:
+    paths:
+      - "Core/**"
+      - ".github/workflows/core-tests.yml"
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run TidelineCore tests
+        working-directory: Core
+        run: swift test

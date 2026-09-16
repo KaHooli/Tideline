@@ -1,0 +1,19 @@
+# Xcode / XcodeGen
+*.xcodeproj
+*.xcworkspace
+xcuserdata/
+DerivedData/
+.build/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Homebrew cask build artifacts
+Homebrew/*.dmg
+Homebrew/*.zip
+
+# Secrets
+*.p12
+*.mobileprovision
+*.cer
